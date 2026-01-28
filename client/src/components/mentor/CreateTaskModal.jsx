@@ -5,6 +5,9 @@ import { createTask } from "../../api/mentor.api";
 
 const CreateTaskModal = ({ programs, onClose, onCreated }) => {
   const [loading, setLoading] = useState(false);
+  const [deadlineError, setDeadlineError] = useState("");
+
+  const today = new Date().toISOString().split("T")[0];
 
   const [form, setForm] = useState({
     title: "",
@@ -15,14 +18,34 @@ const CreateTaskModal = ({ programs, onClose, onCreated }) => {
     deadline: "",
   });
 
-  const selectedProgram = programs.find((p) => p._id === form.programId);
+  const selectedProgram = programs.find(
+    (p) => p._id === form.programId
+  );
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // ✅ Deadline validation
+    if (name === "deadline") {
+      if (value < today) {
+        setDeadlineError("Deadline cannot be earlier than today");
+      } else {
+        setDeadlineError("");
+      }
+    }
+
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async () => {
     if (!form.title || !form.programId || !form.internId || !form.deadline) {
       return toastError("Please fill all required fields");
+    }
+
+    if (form.deadline < today) {
+      return setDeadlineError(
+        "Deadline cannot be earlier than today"
+      );
     }
 
     try {
@@ -41,98 +64,160 @@ const CreateTaskModal = ({ programs, onClose, onCreated }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-lg rounded-2xl p-6 space-y-5">
-        {/* HEADER */}
-        <div className="flex justify-between items-center border-b pb-3">
-          <h2 className="text-xl font-bold">Create Task</h2>
-          <button onClick={onClose}>
+    <div className="fixed min-h-screen inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-xl rounded-2xl p-6 space-y-6">
+        {/* ================= HEADER ================= */}
+        <div className="flex justify-between items-center border-b pb-4">
+          <h2 className="text-xl font-bold text-gray-800">
+            Create Task
+          </h2>
+
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-red-500 cursor-pointer"
+          >
             <X />
           </button>
         </div>
 
-        {/* TITLE */}
-        <input
-          name="title"
-          placeholder="Task title"
-          className="w-full border rounded-lg p-3"
-          value={form.title}
-          onChange={handleChange}
-        />
+        {/* ================= FORM ================= */}
+        <div className="space-y-5">
+          {/* TITLE */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Task Title <span className="text-red-500">*</span>
+            </label>
+            <input
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              placeholder="Enter task title"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2.5
+              focus:ring-2 focus:ring-indigo-300 outline-none"
+            />
+          </div>
 
-        {/* DESCRIPTION */}
-        <textarea
-          name="description"
-          placeholder="Task description"
-          rows="3"
-          className="w-full border rounded-lg p-3"
-          value={form.description}
-          onChange={handleChange}
-        />
+          {/* DESCRIPTION */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              rows="3"
+              placeholder="Describe the task..."
+              className="w-full border border-gray-300 rounded-lg px-4 py-2.5
+              focus:ring-2 focus:ring-indigo-300 outline-none resize-none"
+            />
+          </div>
 
-        {/* PROGRAM */}
-        <select
-          name="programId"
-          className="w-full border rounded-lg p-3"
-          value={form.programId}
-          onChange={handleChange}
-        >
-          <option value="">Select Program</option>
-          {programs.map((p) => (
-            <option key={p._id} value={p._id}>
-              {p.title}
-            </option>
-          ))}
-        </select>
+          {/* PROGRAM */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Program <span className="text-red-500">*</span>
+            </label>
+            <select
+              name="programId"
+              value={form.programId}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2.5
+              focus:ring-2 focus:ring-indigo-300 outline-none cursor-pointer"
+            >
+              <option value="">Select program</option>
+              {programs.map((p) => (
+                <option key={p._id} value={p._id}>
+                  {p.title}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* INTERN */}
-        {selectedProgram && (
-          <select
-            name="internId"
-            className="w-full border rounded-lg p-3"
-            value={form.internId}
-            onChange={handleChange}
-          >
-            <option value="">Select Intern</option>
-            {selectedProgram.interns.map((i) => (
-              <option key={i.intern._id} value={i.intern._id}>
-                {i.intern.name}
-              </option>
-            ))}
-          </select>
-        )}
+          {/* INTERN */}
+          {selectedProgram && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Intern <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="internId"
+                value={form.internId}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5
+                focus:ring-2 focus:ring-indigo-300 outline-none cursor-pointer"
+              >
+                <option value="">Select intern</option>
+                {selectedProgram.interns.map((i) => (
+                  <option
+                    key={i.intern._id}
+                    value={i.intern._id}
+                  >
+                    {i.intern.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-        {/* PRIORITY */}
-        <select
-          name="priority"
-          className="w-full border rounded-lg p-3"
-          value={form.priority}
-          onChange={handleChange}
-        >
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
+          {/* PRIORITY */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Priority
+            </label>
+            <select
+              name="priority"
+              value={form.priority}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2.5
+              focus:ring-2 focus:ring-indigo-300 outline-none cursor-pointer"
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
 
-        {/* DEADLINE */}
-        <input
-          type="date"
-          name="deadline"
-          className="w-full border rounded-lg p-3"
-          value={form.deadline}
-          onChange={handleChange}
-        />
+          {/* DEADLINE */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Deadline <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="deadline"
+              min={today}
+              value={form.deadline}
+              onChange={handleChange}
+              className={`w-full border rounded-lg px-4 py-2.5 outline-none
+              focus:ring-2 ${
+                deadlineError
+                  ? "border-red-500 ring-red-200"
+                  : "border-gray-300 focus:ring-indigo-300"
+              } cursor-pointer`}
+            />
 
-        {/* ACTIONS */}
+            {deadlineError && (
+              <p className="text-red-500 text-xs mt-1">
+                {deadlineError}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* ================= ACTIONS ================= */}
         <div className="flex justify-end gap-3 pt-4 border-t">
-          <button onClick={onClose} className="px-4 py-2 border rounded-lg">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 border rounded-lg hover:bg-gray-50 cursor-pointer"
+          >
             Cancel
           </button>
 
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-5 py-2 bg-indigo-600 text-white rounded-lg"
+            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg cursor-pointer disabled:opacity-60"
           >
             {loading ? "Creating..." : "Create Task"}
           </button>

@@ -183,7 +183,8 @@ const MentorDashboard = () => {
                     </td>
 
                     <td className="px-5 py-4 text-center">
-                      {task.status === "submitted" &&
+                      {(task.status === "submitted" ||
+                        task.status === "pending") &&
                       task.reviewStatus === "pending" ? (
                         <span className="text-yellow-600 font-medium">
                           Pending

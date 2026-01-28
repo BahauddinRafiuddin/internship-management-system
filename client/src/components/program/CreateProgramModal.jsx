@@ -48,6 +48,10 @@ const CreateProgram = ({ onClose, refresh }) => {
     const diffTime = endDate - startDate;
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
+    if (diffDays < 7) {
+      return toastError("Duration must be minimum one week");
+    }
+
     return Math.ceil(diffDays / 7);
   };
 
@@ -65,6 +69,9 @@ const CreateProgram = ({ onClose, refresh }) => {
       updatedForm.startDate &&
       updatedForm.endDate
     ) {
+      if (new Date(updatedForm.endDate) <= new Date(updatedForm.startDate)) {
+        return toastError("End date must be after start date");
+      }
       const weeks = calculateDuration(
         updatedForm.startDate,
         updatedForm.endDate,
@@ -210,7 +217,7 @@ const CreateProgram = ({ onClose, refresh }) => {
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 border rounded hover:bg-gray-100"
+            className="px-5 py-2 border rounded hover:bg-gray-100 cursor-pointer"
           >
             Cancel
           </button>
@@ -218,7 +225,7 @@ const CreateProgram = ({ onClose, refresh }) => {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-60"
+            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-60 cursor-pointer"
           >
             {loading ? "Creating..." : "Create Program"}
           </button>

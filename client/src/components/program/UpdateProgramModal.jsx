@@ -13,6 +13,7 @@ const domains = [
 
 const UpdateProgramModal = ({ program, onClose, refresh }) => {
   const [loading, setLoading] = useState(false);
+  const [durationInweek,setDurationInWeek]=useState(program.durationInWeeks)
 
   const [form, setForm] = useState({
     title: program.title,
@@ -23,11 +24,46 @@ const UpdateProgramModal = ({ program, onClose, refresh }) => {
     endDate: program.endDate?.slice(0, 10),
   });
 
+  const calculateDuration = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    const diffTime = endDate - startDate;
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    if (diffDays < 7) {
+      return toastError("Duration must be minimum one week");
+    }
+
+    return Math.ceil(diffDays / 7);
+  };
   const handleChange = (e) => {
-    setForm({
+    const { name, value } = e.target;
+
+    let updatedForm = {
       ...form,
-      [e.target.name]: e.target.value,
-    });
+      [name]: value,
+    };
+    // Auto calculate duration
+    if (
+      (name === "startDate" || name === "endDate") &&
+      updatedForm.startDate &&
+      updatedForm.endDate
+    ) {
+      if (new Date(updatedForm.endDate) <= new Date(updatedForm.startDate)) {
+        return toastError("End date must be after start date");
+      }
+      const weeks = calculateDuration(
+        updatedForm.startDate,
+        updatedForm.endDate,
+      );
+
+      if (weeks > 0) {
+        updatedForm.durationInWeeks = weeks;
+      }
+      setDurationInWeek(weeks)
+    }
+    setForm(updatedForm);
   };
 
   const handleSubmit = async (e) => {
@@ -96,7 +132,7 @@ const UpdateProgramModal = ({ program, onClose, refresh }) => {
         />
 
         <input
-          value={`${program.durationInWeeks} weeks`}
+          value={durationInweek}
           readOnly
           className="border p-3 bg-gray-100 cursor-not-allowed rounded"
         />
@@ -125,14 +161,14 @@ const UpdateProgramModal = ({ program, onClose, refresh }) => {
           <button
             type="button"
             onClick={onClose}
-            className="border px-4 py-2 rounded"
+            className="border px-4 py-2 rounded cursor-pointer"
           >
             Cancel
           </button>
 
           <button
             disabled={loading}
-            className="bg-blue-600 text-white px-6 py-2 rounded disabled:opacity-60"
+            className="bg-blue-600 text-white px-6 py-2 rounded disabled:opacity-60 cursor-pointer"
           >
             {loading ? "Updating..." : "Update"}
           </button>
