@@ -121,6 +121,49 @@ export const getAllMentors = async (req, res) => {
   }
 };
 
+export const deleteMentorById = async (req, res) => {
+  try {
+    const { mentorId } = req.params;
+
+    //  find mentor
+    const mentor = await User.findById(mentorId);
+
+    if (!mentor || mentor.role !== "mentor") {
+      return res.status(404).json({
+        success: false,
+        message: "Mentor not found"
+      });
+    }
+
+    //  check if mentor assigned to any program
+    const assignedProgram = await InternshipProgram.findOne({
+      mentor: mentorId
+    });
+
+    if (assignedProgram) {
+      return res.status(400).json({
+        success: false,
+        message: "Mentor is assigned to a program. Remove mentor from program first."
+      });
+    }
+
+    //  delete mentor
+    await User.findByIdAndDelete(mentorId);
+
+    res.status(200).json({
+      success: true,
+      message: "Mentor deleted successfully"
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while deleting mentor"
+    });
+  }
+};
+
 export const updateInternStatus = async (req, res) => {
   try {
     const { internId } = req.params

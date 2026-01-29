@@ -1,7 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { createMentor, getAllMentors } from "../../api/admin.api";
+import {
+  createMentor,
+  getAllMentors,
+  deleteMentorById,
+} from "../../api/admin.api";
+
 import { toastError, toastSuccess } from "../../utils/toast";
-import { User, Mail, Lock, X, Eye, EyeOff, SearchX, Users } from "lucide-react";
+
+import {
+  User,
+  Mail,
+  Lock,
+  X,
+  Eye,
+  EyeOff,
+  SearchX,
+  Users,
+  Trash2,
+} from "lucide-react";
+
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 const Mentors = () => {
   const [mentors, setMentors] = useState([]);
@@ -10,6 +28,8 @@ const Mentors = () => {
   const [search, setSearch] = useState("");
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+
+  const [deleteMentor, setDeleteMentor] = useState(null);
 
   const emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]{2,}@[a-z0-9.-]+\.[a-z]{2,}$/;
   const fullNameRegex = /^[A-Za-z ]{3,30}$/;
@@ -83,8 +103,31 @@ const Mentors = () => {
     }
   };
 
+  /* ================= DELETE ================= */
+
+  const handleDelete = async () => {
+    try {
+      const res = await deleteMentorById(deleteMentor._id);
+      toastSuccess(res.message);
+      setDeleteMentor(null);
+      fetchMentors();
+    } catch (err) {
+      toastError(err.response?.data?.message || "Delete failed");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 space-y-8">
+      {/* ================= CONFIRM MODAL ================= */}
+      {deleteMentor && (
+        <ConfirmModal
+          title="Delete Mentor"
+          message={`Are you sure you want to delete mentor "${deleteMentor.name}"? This action cannot be undone.`}
+          onCancel={() => setDeleteMentor(null)}
+          onConfirm={handleDelete}
+        />
+      )}
+
       {/* ================= HEADER ================= */}
       <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -198,7 +241,6 @@ const Mentors = () => {
               )}
             </div>
 
-            {/* Button */}
             <div className="md:col-span-3 flex justify-end mt-4">
               <button
                 type="submit"
@@ -210,20 +252,18 @@ const Mentors = () => {
           </form>
         </div>
       )}
+      {/* ================= EVERYTHING ELSE UNCHANGED ================= */}
 
       {/* ================= EMPTY STATE ================= */}
       {mentors.length === 0 ? (
         <div className="bg-white rounded-2xl shadow p-14 flex flex-col items-center justify-center text-center space-y-4">
           <SearchX className="w-20 h-20 text-blue-500 opacity-80" />
-
           <h2 className="text-xl font-semibold text-gray-800">
             No mentors found
           </h2>
-
           <p className="text-gray-500 max-w-md">
             We couldn’t find any mentors matching your search.
           </p>
-
           {search && (
             <button
               onClick={() => setSearch("")}
@@ -243,19 +283,24 @@ const Mentors = () => {
                   <th className="px-6 py-4 text-left">Mentor</th>
                   <th className="px-6 py-4 text-left">Email</th>
                   <th className="px-6 py-4 text-center">Interns</th>
+                  <th className="px-6 py-4 text-center">Action</th>
                 </tr>
               </thead>
 
               <tbody>
                 {mentors.map((mentor) => (
-                  <tr
-                    key={mentor._id}
-                    className="border-t hover:bg-gray-50 transition"
-                  >
+                  <tr key={mentor._id} className="border-t hover:bg-gray-50">
                     <td className="px-6 py-4 font-medium">{mentor.name}</td>
                     <td className="px-6 py-4 text-gray-600">{mentor.email}</td>
                     <td className="px-6 py-4 text-center font-semibold">
                       {mentor.internCount || 0}
+                    </td>
+                    <td className="px-6 py-4 flex justify-center items-center">
+                      <Trash2
+                        size={18}
+                        className="text-red-500 hover:text-red-700 cursor-pointer"
+                        onClick={() => setDeleteMentor(mentor)}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -270,7 +315,15 @@ const Mentors = () => {
                 key={mentor._id}
                 className="bg-white rounded-2xl shadow p-5 space-y-3"
               >
-                <h2 className="font-semibold text-lg">{mentor.name}</h2>
+                <div className="flex justify-between items-start">
+                  <h2 className="font-semibold text-lg">{mentor.name}</h2>
+
+                  <Trash2
+                    size={18}
+                    className="text-red-500 cursor-pointer"
+                    onClick={() => setDeleteMentor(mentor)}
+                  />
+                </div>
 
                 <p className="text-gray-600 text-sm">{mentor.email}</p>
 

@@ -8,8 +8,10 @@ import CreateProgramModal from "../../components/program/CreateProgramModal";
 import UpdateProgramModal from "../../components/program/UpdateProgramModal";
 
 import { toastError, toastSuccess } from "../../utils/toast";
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 const Programs = () => {
+  const [confirmData, setConfirmData] = useState(null);
   const [programs, setPrograms] = useState([]);
   const [allPrograms, setAllPrograms] = useState([]);
   const [search, setSearch] = useState("");
@@ -62,7 +64,7 @@ const Programs = () => {
         p.title.toLowerCase().includes(value) ||
         p.domain.toLowerCase().includes(value) ||
         p.mentor?.name?.toLowerCase().includes(value) ||
-        p.status.toLowerCase().includes(value)
+        p.status.toLowerCase().includes(value),
     );
 
     setPrograms(filtered);
@@ -70,7 +72,6 @@ const Programs = () => {
 
   return (
     <div className="space-y-8">
-
       {/* ================= MODALS ================= */}
       {showCreate && (
         <CreateProgramModal
@@ -92,6 +93,18 @@ const Programs = () => {
           program={editProgram}
           onClose={() => setEditProgram(null)}
           refresh={fetchPrograms}
+        />
+      )}
+
+      {confirmData && (
+        <ConfirmModal
+          title="Confirm Program Status"
+          message={`Are you sure you want to mark "${confirmData.program.title}" as "${confirmData.nextStatus}"? This action cannot be undone.`}
+          onCancel={() => setConfirmData(null)}
+          onConfirm={() => {
+            handleStatusChange(confirmData.program);
+            setConfirmData(null);
+          }}
         />
       )}
 
@@ -165,7 +178,6 @@ const Programs = () => {
               "
             >
               <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
-
                 {/* INFO */}
                 <div className="space-y-2">
                   <h2 className="text-lg font-semibold text-gray-900">
@@ -179,10 +191,11 @@ const Programs = () => {
                   </div>
                 </div>
 
+                <div className="">
+                  <ProgramStatusBadge status={program.status} />
+                </div>
                 {/* ACTIONS */}
                 <div className="flex flex-wrap items-center gap-3">
-                  <ProgramStatusBadge status={program.status} />
-
                   {program.status === "upcoming" && (
                     <button
                       onClick={() => setSelectedProgram(program)}
@@ -194,16 +207,22 @@ const Programs = () => {
 
                   {program.status !== "completed" && (
                     <button
-                      onClick={() => handleStatusChange(program)}
+                      onClick={() =>
+                        setConfirmData({
+                          program,
+                          nextStatus:
+                            program.status === "upcoming"
+                              ? "active"
+                              : "completed",
+                        })
+                      }
                       className={`px-4 py-2 rounded-lg text-white cursor-pointer ${
                         program.status === "upcoming"
                           ? "bg-blue-600 hover:bg-blue-700"
                           : "bg-green-600 hover:bg-green-700"
                       }`}
                     >
-                      {program.status === "upcoming"
-                        ? "Activate"
-                        : "Complete"}
+                      {program.status === "upcoming" ? "Activate" : "Complete"}
                     </button>
                   )}
 

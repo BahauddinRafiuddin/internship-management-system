@@ -30,3 +30,8 @@ export const createMentor = async (data) => {
   const res = await api.post("/admin/addMentor", data)
   return res.data
 }
+
+export const deleteMentorById = async (mentorId) => {
+  const res = await api.delete(`/admin/mentor/${mentorId}/delete`)
+  return res.data
+}
