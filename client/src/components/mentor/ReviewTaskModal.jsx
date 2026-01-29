@@ -48,164 +48,155 @@ const ReviewTaskModal = ({ task, onClose, refresh }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-2 sm:p-4">
-      <form className="bg-white w-full max-w-xl rounded-2xl shadow-xl p-4 sm:p-6 space-y-5 max-h-[90vh] overflow-y-auto">
-        {/* HEADER */}
-        <div className="flex justify-between items-center border-b pb-3">
-          <h2 className="text-xl font-bold text-gray-800">Review Task</h2>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-2 sm:px-4">
+      <form className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        {/* ================= HEADER ================= */}
+        <div className="flex items-center justify-between px-5 py-4 border-b bg-gray-50">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+            Review Task
+          </h2>
 
           <button
             type="button"
             onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded cursor-pointer"
+            className="p-2 rounded hover:bg-gray-200 cursor-pointer"
           >
             <X />
           </button>
         </div>
 
-        {/* TASK INFO */}
-        {/* <div className="bg-gray-50 p-4 rounded-xl space-y-2">
-          <p>
-            <b>Task:</b> {task.title}
-          </p>
-
-          <p className="text-sm text-gray-600">{task.description}</p>
-
-          <p className="text-sm">
-            <b>Intern:</b> {task.assignedIntern?.name}
-          </p>
-
-          <p className="text-sm">
-            <b>Email:</b> {task.assignedIntern?.email}
-          </p>
-
-          <p className="text-sm">
-            <b>Submission Link: </b> {task.submissionLink}
-          </p>
-          <p className="text-sm">
-            <b>Submission Text: </b> {task.submissionText}
-          </p>
-          <p className="text-sm">
-            <b>Submission File:</b> {task.submissionFile}
-          </p>
-          <p> </p>
-        </div> */}
-        {/* TASK INFO */}
-        <div className="bg-gray-50 p-4 rounded-xl space-y-3 text-sm">
-          <p>
-            <b>Task:</b> {task.title}
-          </p>
-
-          <p className="text-gray-600">{task.description}</p>
-
-          <hr />
-
-          <p>
-            <b>Intern:</b> {task.assignedIntern?.name}
-          </p>
-
-          <p>
-            <b>Email:</b> {task.assignedIntern?.email}
-          </p>
-
-          <hr />
-
-          {/* SUBMISSION LINK */}
-          {task.submissionLink && (
-            <p>
-              <b>Submission Link:</b>{" "}
-              <a
-                href={task.submissionLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline break-all hover:text-blue-800"
-              >
-                {task.submissionLink}
-              </a>
-            </p>
-          )}
-
-          {/* SUBMISSION TEXT */}
-          {task.submissionText && (
+        {/* ================= BODY ================= */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+          {/* TASK INFO */}
+          <div className="bg-gray-50 border rounded-xl p-4 space-y-3 text-sm">
             <div>
-              <b>Submission Text:</b>
-              <p className="mt-1 bg-white border rounded-lg p-3 text-gray-700">
-                {task.submissionText}
+              <p className="font-semibold text-gray-800">Task</p>
+              <p className="text-gray-700">{task.title}</p>
+            </div>
+
+            <div>
+              <p className="font-semibold text-gray-800">Description</p>
+              <p className="text-gray-600 leading-relaxed">
+                {task.description}
               </p>
             </div>
-          )}
 
-          {/* SUBMISSION FILE */}
-          {task.submissionFile && (
-            <p>
-              <b>Submission File:</b>{" "}
-              <a
-                href={task.submissionFile}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-green-600 underline hover:text-green-800"
+            <hr />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <p>
+                <span className="font-semibold">Intern:</span>{" "}
+                {task.assignedIntern?.name}
+              </p>
+
+              <p className="break-all">
+                <span className="font-semibold">Email:</span>{" "}
+                {task.assignedIntern?.email}
+              </p>
+            </div>
+
+            <hr />
+
+            {/* SUBMISSION LINK */}
+            {task.submissionLink && (
+              <div>
+                <p className="font-semibold">Submission Link</p>
+                <a
+                  href={task.submissionLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline break-all hover:text-blue-800"
+                >
+                  {task.submissionLink}
+                </a>
+              </div>
+            )}
+
+            {/* SUBMISSION TEXT */}
+            {task.submissionText && (
+              <div>
+                <p className="font-semibold mb-1">Submission Text</p>
+                <div className="bg-white border rounded-lg p-3 text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  {task.submissionText}
+                </div>
+              </div>
+            )}
+
+            {/* SUBMISSION FILE */}
+            {task.submissionFile && (
+              <div>
+                <p className="font-semibold">Submission File</p>
+                <a
+                  href={task.submissionFile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-1 text-green-600 underline hover:text-green-800"
+                >
+                  View / Download File
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* ================= REVIEW ================= */}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* STATUS */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Review Decision
+              </label>
+              <select
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+                className="border rounded-lg px-4 py-2 w-full cursor-pointer focus:ring-2 focus:ring-blue-500"
               >
-                View / Download File
-              </a>
-            </p>
-          )}
+                <option value="approved">Approve</option>
+                <option value="rejected">Reject</option>
+              </select>
+            </div>
+
+            {/* SCORE */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Score (0–10)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="10"
+                name="score"
+                value={form.score}
+                onChange={handleChange}
+                className="border rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter score"
+              />
+            </div>
+          </div>
+
+          {/* FEEDBACK */}
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Feedback (optional)
+            </label>
+            <textarea
+              rows="4"
+              name="feedback"
+              value={form.feedback}
+              onChange={handleChange}
+              className="border rounded-lg px-4 py-2 w-full resize-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Write feedback..."
+            />
+          </div>
         </div>
 
-        {/* STATUS */}
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Review Decision
-          </label>
-
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="border rounded-lg px-4 py-2 w-full cursor-pointer"
-          >
-            <option value="approved">Approve</option>
-            <option value="rejected">Reject</option>
-          </select>
-        </div>
-
-        {/* SCORE */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Score (0–10)</label>
-
-          <input
-            type="number"
-            min="0"
-            max="10"
-            name="score"
-            value={form.score}
-            onChange={handleChange}
-            className="border rounded-lg px-4 py-2 w-full"
-            placeholder="Enter score"
-          />
-        </div>
-
-        {/* FEEDBACK */}
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Feedback (optional)
-          </label>
-
-          <textarea
-            rows="3"
-            name="feedback"
-            value={form.feedback}
-            onChange={handleChange}
-            className="border rounded-lg px-4 py-2 w-full"
-            placeholder="Write feedback..."
-          />
-        </div>
-
-        {/* ACTIONS */}
-        <div className="flex justify-end gap-3 pt-4 border-t">
+        {/* ================= FOOTER ================= */}
+        <div className="flex justify-end gap-3 px-5 py-4 border-t bg-gray-50">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
+            className="px-5 py-2 border rounded-lg hover:bg-gray-200 cursor-pointer"
           >
             Cancel
           </button>

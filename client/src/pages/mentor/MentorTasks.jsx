@@ -174,19 +174,19 @@ const MentorTasks = () => {
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${priorityColors[task.priority]}`}
                   >
-                    {task.priority}
+                    Priority - {task.priority}
                   </span>
 
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[task.status]}`}
                   >
-                    {task.status}
+                  Task Status - {task.status}
                   </span>
                 </div>
               </div>
 
               {/* RIGHT */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-sm">
+              <div className="flex flex-col  items-start sm:items-center gap-4 text-sm">
                 <div className="text-gray-500">
                   <p>
                     <b>Deadline:</b> {new Date(task.deadline).toDateString()}
@@ -213,7 +213,7 @@ const MentorTasks = () => {
                     Review
                   </button>
                 ) : (
-                  <span className="text-gray-400">—</span>
+                  <span className="text-gray-400"></span>
                 )}
               </div>
             </div>

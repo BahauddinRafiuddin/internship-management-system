@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  GraduationCap,
-  Users,
-  ClipboardList,
-  Menu,
-  X,
-} from "lucide-react";
+import logo from "../../assets/logo.svg";
+import { GraduationCap, Users, ClipboardList, Menu, X } from "lucide-react";
 
 const Landing = () => {
   const [open, setOpen] = useState(false);
@@ -17,9 +12,12 @@ const Landing = () => {
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-5 flex justify-between items-center">
           {/* Logo */}
-          <h1 className="text-xl sm:text-2xl font-bold text-indigo-700">
-            InternshipMS
-          </h1>
+          <div className="flex items-center justify-center gap-2">
+            <img src={logo} alt="" />
+            <h1 className="text-xl sm:text-2xl font-bold text-indigo-700">
+              InternshipMS
+            </h1>
+          </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-4">
@@ -39,10 +37,7 @@ const Landing = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden"
-            onClick={() => setOpen(!open)}
-          >
+          <button className="md:hidden" onClick={() => setOpen(!open)}>
             {open ? <X size={26} /> : <Menu size={26} />}
           </button>
         </div>
@@ -79,8 +74,8 @@ const Landing = () => {
           </h2>
 
           <p className="mt-6 text-gray-600 text-base sm:text-lg">
-            Manage interns, tasks, performance, reviews and certificates —
-            all in one powerful platform designed for colleges and companies.
+            Manage interns, tasks, performance, reviews and certificates — all
+            in one powerful platform designed for colleges and companies.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:justify-center md:justify-start">
@@ -128,11 +123,11 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ================= FOOTER ================= */}
+      {/* ================= FOOTER =================
       <footer className="bg-white border-t py-6 text-center text-gray-500 text-sm absolute bottom-0 w-full">
-        © {new Date().getFullYear()} Smart Internship Management System. All rights
-        reserved.
-      </footer>
+        © {new Date().getFullYear()} Smart Internship Management System. All
+        rights reserved.
+      </footer> */}
     </div>
   );
 };

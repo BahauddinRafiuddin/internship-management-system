@@ -11,7 +11,7 @@ export const createMentor = async (req, res) => {
       return res.status(400).json({ success: false, message: 'All Fields Are Required!!' })
     }
 
-    const user=await User.find({email:email})
+    const user=await User.findOne({email:email})
     if(user){
       return res.status(400).json({success:false,message:"User Already Exist With This Email"})
     }
