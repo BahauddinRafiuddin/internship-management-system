@@ -64,36 +64,35 @@ const MentorTasks = () => {
     fetchTasks();
   }, [showCreateModal]);
 
-
   if (loading)
     return (
       <div className="text-center py-20 text-gray-500">
         Loading mentor tasks...
       </div>
     );
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* ================= HEADER ================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Task Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Task Management</h1>
           <p className="text-gray-500 mt-1">
-            Review intern submissions and manage tasks
+            Monitor intern progress and review submissions
           </p>
         </div>
 
         <button
           onClick={() => setShowCreateModal(true)}
           className="
-      px-5 py-2
-      bg-indigo-600
-      hover:bg-indigo-700
-      text-white
-      rounded-lg
-      font-medium
-      cursor-pointer
-    "
+          cursor-pointer
+          px-6 py-2.5
+          bg-linear-to-r from-indigo-600 to-purple-600
+          hover:opacity-90
+          text-white
+          rounded-xl
+          font-medium
+          shadow-md
+        "
         >
           + Create Task
         </button>
@@ -101,42 +100,38 @@ const MentorTasks = () => {
 
       {showCreateModal && (
         <CreateTaskModal
-          programs={programs} // you already have or fetch
+          programs={programs}
           onClose={() => setShowCreateModal(false)}
           onCreated={handleTaskCreated}
         />
       )}
 
-      {/* ================= STAT CARDS ================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      {/* ================= STATS ================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
         <StatCard
           title="Total Tasks"
           value={stats.totalTasks || 0}
           icon={ClipboardList}
           color="bg-blue-600"
         />
-
         <StatCard
           title="Pending Reviews"
           value={stats.pendingReviews || 0}
           icon={Clock}
           color="bg-yellow-500"
         />
-
         <StatCard
           title="Approved"
           value={stats.approvedTasks || 0}
           icon={CheckCircle}
           color="bg-green-600"
         />
-
         <StatCard
           title="Rejected"
           value={stats.rejectedTasks || 0}
           icon={XCircle}
           color="bg-red-600"
         />
-
         <StatCard
           title="Late"
           value={stats.lateSubmissions || 0}
@@ -145,121 +140,88 @@ const MentorTasks = () => {
         />
       </div>
 
-      {/* ================= DESKTOP TABLE ================= */}
-      <div className="hidden lg:block bg-white rounded-2xl shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="px-5 py-4 text-left">Task</th>
-              <th className="px-5 py-4 text-left">Intern</th>
-              <th className="px-5 py-4 text-center">Priority</th>
-              <th className="px-5 py-4 text-center">Status</th>
-              <th className="px-5 py-4 text-center">Deadline</th>
-              <th className="px-5 py-4 text-center">Attempts</th>
-              <th className="px-5 py-4 text-right">Action</th>
-            </tr>
-          </thead>
+      {/* ================= TASK LIST ================= */}
+      <div className="space-y-5">
+        {tasks.map((task) => (
+          <div
+            key={task._id}
+            className="
+            bg-white
+            rounded-2xl
+            shadow-sm
+            border
+            p-6
+            hover:shadow-md
+            transition
+          "
+          >
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              {/* LEFT */}
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {task.title}
+                </h2>
 
-          <tbody>
-            {tasks.map((task) => (
-              <tr
-                key={task._id}
-                className="border-t hover:bg-gray-50 transition"
-              >
-                <td className="px-5 py-4">
-                  <p className="font-semibold">{task.title}</p>
-                  <p className="text-sm text-gray-500">{task.description}</p>
-                </td>
+                <p className="text-sm text-gray-500 max-w-2xl">
+                  {task.description}
+                </p>
 
-                <td className="px-5 py-4">{task.assignedIntern?.name}</td>
+                <div className="flex flex-wrap gap-3 mt-3">
+                  <span className="text-sm text-gray-600">
+                    👤 {task.assignedIntern?.name}
+                  </span>
 
-                <td className="px-5 py-4 text-center">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${priorityColors[task.priority]}`}
                   >
                     {task.priority}
                   </span>
-                </td>
 
-                <td className="px-5 py-4 text-center">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[task.status]}`}
                   >
                     {task.status}
                   </span>
-                </td>
+                </div>
+              </div>
 
-                <td className="px-5 py-4 text-center text-sm">
-                  {new Date(task.deadline).toDateString()}
-                </td>
+              {/* RIGHT */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-sm">
+                <div className="text-gray-500">
+                  <p>
+                    <b>Deadline:</b> {new Date(task.deadline).toDateString()}
+                  </p>
+                  <p>
+                    <b>Attempts:</b> {task.attempts}
+                  </p>
+                </div>
 
-                <td className="px-5 py-4 text-center">{task.attempts}</td>
-
-                <td className="px-5 py-4 text-right">
-                  {task.status === "submitted" &&
-                  task.reviewStatus !== "reviewed" ? (
-                    <button
-                      onClick={() => setSelectedTask(task)}
-                      className="text-indigo-600 hover:underline cursor-pointer"
-                    >
-                      Review
-                    </button>
-                  ) : (
-                    <span className="text-gray-400 text-sm">—</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* ================= MOBILE VIEW ================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:hidden">
-        {tasks.map((task) => (
-          <div
-            key={task._id}
-            className="bg-white rounded-2xl shadow p-6 space-y-3"
-          >
-            <h2 className="font-bold text-lg">{task.title}</h2>
-
-            <p className="text-sm text-gray-600">{task.description}</p>
-
-            <p className="text-sm">
-              <b>Intern:</b> {task.assignedIntern?.name}
-            </p>
-
-            <div className="flex flex-wrap gap-2">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${priorityColors[task.priority]}`}
-              >
-                {task.priority}
-              </span>
-
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[task.status]}`}
-              >
-                {task.status}
-              </span>
+                {task.status === "submitted" &&
+                task.reviewStatus !== "reviewed" ? (
+                  <button
+                    onClick={() => setSelectedTask(task)}
+                    className="
+                    cursor-pointer
+                    px-5 py-2
+                    bg-indigo-600
+                    hover:bg-indigo-700
+                    text-white
+                    rounded-lg
+                    font-medium
+                  "
+                  >
+                    Review
+                  </button>
+                ) : (
+                  <span className="text-gray-400">—</span>
+                )}
+              </div>
             </div>
-
-            <p className="text-sm text-gray-500">
-              Deadline: {new Date(task.deadline).toDateString()}
-            </p>
-
-            {task.status === "submitted" &&
-              task.reviewStatus !== "reviewed" && (
-                <button
-                  onClick={() => setSelectedTask(task)}
-                  className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg cursor-pointer"
-                >
-                  Review Task
-                </button>
-              )}
           </div>
         ))}
       </div>
 
+      {/* ================= REVIEW MODAL ================= */}
       {selectedTask && (
         <ReviewTaskModal
           task={selectedTask}

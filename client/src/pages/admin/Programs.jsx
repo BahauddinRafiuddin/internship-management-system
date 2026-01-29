@@ -17,11 +17,12 @@ const Programs = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [editProgram, setEditProgram] = useState(null);
 
+  // ================= FETCH =================
   const fetchPrograms = async () => {
     try {
       const res = await getAllPrograms();
-      setAllPrograms(res.programs);
       setPrograms(res.programs);
+      setAllPrograms(res.programs);
     } catch (err) {
       toastError(err.response?.data?.message);
     }
@@ -57,18 +58,19 @@ const Programs = () => {
     const value = search.trim().toLowerCase();
 
     const filtered = allPrograms.filter(
-      (program) =>
-        program.title.toLowerCase().includes(value) ||
-        program.domain.toLowerCase().includes(value) ||
-        program.mentor?.name?.toLowerCase().includes(value) ||
-        program.status.toLowerCase().includes(value)
+      (p) =>
+        p.title.toLowerCase().includes(value) ||
+        p.domain.toLowerCase().includes(value) ||
+        p.mentor?.name?.toLowerCase().includes(value) ||
+        p.status.toLowerCase().includes(value)
     );
 
     setPrograms(filtered);
   }, [search, allPrograms]);
 
   return (
-    <div>
+    <div className="space-y-8">
+
       {/* ================= MODALS ================= */}
       {showCreate && (
         <CreateProgramModal
@@ -93,195 +95,132 @@ const Programs = () => {
         />
       )}
 
-      {/* ================= PAGE ================= */}
-      <div className="space-y-6">
-        {/* ================= HEADER ================= */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h1 className="text-2xl font-bold text-gray-800">
+      {/* ================= HEADER ================= */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
             Internship Programs
           </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Manage internship lifecycle and interns
+          </p>
+        </div>
 
+        <div className="flex flex-col sm:flex-row gap-4">
           <input
-            placeholder="Search programs by name, domain or status..."
-            className="border-b-2 border-blue-400 px-4 py-2 rounded-lg w-full sm:w-80 focus:ring-2 focus:border-0 ring-blue-400 outline-0"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by title, domain, mentor or status..."
+            className="
+              w-full sm:w-80 px-4 py-2 rounded-xl border
+              focus:ring-2 focus:ring-blue-500 outline-none
+            "
           />
 
           <button
             onClick={() => setShowCreate(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition cursor-pointer"
+            className="
+              cursor-pointer
+              bg-linear-to-r from-blue-600 to-indigo-600
+              hover:opacity-90
+              text-white px-6 py-2.5 rounded-xl
+              font-medium shadow
+            "
           >
             + Create Program
           </button>
         </div>
+      </div>
 
-        {/* ================= EMPTY STATE ================= */}
-        {programs.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow p-14 flex flex-col items-center justify-center text-center space-y-4">
-            <SearchX className="w-20 h-20 text-blue-500 opacity-80" />
+      {/* ================= EMPTY ================= */}
+      {programs.length === 0 ? (
+        <div className="bg-white rounded-2xl shadow p-14 flex flex-col items-center text-center space-y-4">
+          <SearchX className="w-20 h-20 text-blue-500 opacity-70" />
 
-            <h2 className="text-xl font-semibold text-gray-800">
-              No programs found
-            </h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            No programs found
+          </h2>
 
-            <p className="text-gray-500 max-w-md">
-              We couldn’t find any internship programs matching your search.
-              Try adjusting keywords or clearing the search.
-            </p>
+          <p className="text-gray-500 max-w-md">
+            Try adjusting your search or clear the filter.
+          </p>
 
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition cursor-pointer"
-              >
-                Clear Search
-              </button>
-            )}
-          </div>
-        ) : (
-          <>
-            {/* ================= DESKTOP TABLE ================= */}
-            <div className="hidden lg:block bg-white rounded-2xl shadow overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="p-4 text-left">Program</th>
-                    <th className="p-4 text-left">Domain</th>
-                    <th className="p-4 text-left">Mentor</th>
-                    <th className="p-4 text-center">Interns</th>
-                    <th className="p-4 text-center">Status</th>
-                    <th className="p-4 text-right">Actions</th>
-                  </tr>
-                </thead>
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer"
+            >
+              Clear Search
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {programs.map((program) => (
+            <div
+              key={program._id}
+              className="
+                bg-white rounded-2xl shadow-sm border
+                p-6 hover:shadow-md transition
+              "
+            >
+              <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
 
-                <tbody>
-                  {programs.map((program) => (
-                    <tr
-                      key={program._id}
-                      className="border-t hover:bg-gray-50 transition"
-                    >
-                      <td className="p-4 font-semibold text-gray-800">
-                        {program.title}
-                      </td>
+                {/* INFO */}
+                <div className="space-y-2">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {program.title}
+                  </h2>
 
-                      <td className="p-4 text-gray-600">
-                        {program.domain}
-                      </td>
-
-                      <td className="p-4">
-                        {program.mentor?.name || "—"}
-                      </td>
-
-                      <td className="p-4 text-center font-medium">
-                        {program.interns.length}
-                      </td>
-
-                      <td className="p-4 text-center">
-                        <ProgramStatusBadge status={program.status} />
-                      </td>
-
-                      <td className="p-4">
-                        <div className="flex justify-end gap-2">
-                          {program.status === "upcoming" && (
-                            <button
-                              onClick={() =>
-                                setSelectedProgram(program)
-                              }
-                              className="px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-sm cursor-pointer"
-                            >
-                              Enroll
-                            </button>
-                          )}
-
-                          {program.status !== "completed" && (
-                            <>
-                              <button
-                                onClick={() =>
-                                  handleStatusChange(program)
-                                }
-                                className="px-3 py-1.5 rounded bg-green-600 hover:bg-green-700 text-white text-sm cursor-pointer"
-                              >
-                                Advance
-                              </button>
-
-                              <button
-                                onClick={() => setEditProgram(program)}
-                                className="px-3 py-1.5 rounded bg-yellow-500 hover:bg-yellow-600 text-white text-sm cursor-pointer"
-                              >
-                                Edit
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* ================= MOBILE CARDS ================= */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
-              {programs.map((program) => (
-                <div
-                  key={program._id}
-                  className="bg-white rounded-2xl shadow p-5 space-y-3"
-                >
-                  <div className="flex justify-between items-start">
-                    <h2 className="font-semibold text-lg">
-                      {program.title}
-                    </h2>
-                    <ProgramStatusBadge status={program.status} />
-                  </div>
-
-                  <p className="text-sm text-gray-600">
-                    <b>Domain:</b> {program.domain}
-                  </p>
-
-                  <p className="text-sm text-gray-600">
-                    <b>Mentor:</b> {program.mentor?.name || "—"}
-                  </p>
-
-                  <p className="text-sm text-gray-600">
-                    <b>Interns:</b> {program.interns.length}
-                  </p>
-
-                  {/* ===== MOBILE ACTION BUTTONS ===== */}
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {program.status === "upcoming" && (
-                      <button
-                        onClick={() => setSelectedProgram(program)}
-                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded cursor-pointer"
-                      >
-                        Enroll
-                      </button>
-                    )}
-
-                    {program.status !== "completed" && (
-                      <>
-                        <button
-                          onClick={() => handleStatusChange(program)}
-                          className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded cursor-pointer"
-                        >
-                          Advance
-                        </button>
-
-                        <button
-                          onClick={() => setEditProgram(program)}
-                          className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded cursor-pointer"
-                        >
-                          Edit
-                        </button>
-                      </>
-                    )}
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                    <span>📘 {program.domain}</span>
+                    <span>👨‍🏫 {program.mentor?.name || "—"}</span>
+                    <span>👥 {program.interns.length} interns</span>
                   </div>
                 </div>
-              ))}
+
+                {/* ACTIONS */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <ProgramStatusBadge status={program.status} />
+
+                  {program.status === "upcoming" && (
+                    <button
+                      onClick={() => setSelectedProgram(program)}
+                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg cursor-pointer"
+                    >
+                      Enroll
+                    </button>
+                  )}
+
+                  {program.status !== "completed" && (
+                    <button
+                      onClick={() => handleStatusChange(program)}
+                      className={`px-4 py-2 rounded-lg text-white cursor-pointer ${
+                        program.status === "upcoming"
+                          ? "bg-blue-600 hover:bg-blue-700"
+                          : "bg-green-600 hover:bg-green-700"
+                      }`}
+                    >
+                      {program.status === "upcoming"
+                        ? "Activate"
+                        : "Complete"}
+                    </button>
+                  )}
+
+                  {program.status !== "completed" && (
+                    <button
+                      onClick={() => setEditProgram(program)}
+                      className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg cursor-pointer"
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
-          </>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

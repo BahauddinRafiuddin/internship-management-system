@@ -48,40 +48,59 @@ const AdminDashboard = () => {
 
   if (loading) return <p>Loading dashboard...</p>;
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Dashboard Overview</h1>
+    <div className="space-y-10">
+      {/* ================= HEADER ================= */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+        <p className="text-gray-500 mt-1">
+          System summary and real-time statistics
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard
-          title="Total Interns"
-          value={stats.interns}
-          color="border-blue-500"
-        />
-        <StatCard
-          title="Active Interns"
-          value={stats.activeInterns}
-          color="border-green-500"
-        />
-        <StatCard
-          title="Mentors"
-          value={stats.mentors}
-          color="border-purple-500"
-        />
-        <StatCard
-          title="Programs"
-          value={stats.programs}
-          color="border-yellow-500"
-        />
-        <StatCard
-          title="Active Programs"
-          value={stats.activePrograms}
-          color="border-indigo-500"
-        />
-        <StatCard
-          title="Completed Programs"
-          value={stats.completedPrograms}
-          color="border-red-500"
-        />
+      {/* ================= STATS GRID ================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        {/* CARD */}
+        <div className="cursor-pointer bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition border-l-8 border-blue-500">
+          <p className="text-gray-500 text-sm">Total Interns</p>
+          <h2 className="text-4xl font-bold text-gray-900 mt-2">
+            {stats.interns}
+          </h2>
+        </div>
+
+        <div className="cursor-pointer bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition border-l-8 border-green-500">
+          <p className="text-gray-500 text-sm">Active Interns</p>
+          <h2 className="text-4xl font-bold text-gray-900 mt-2">
+            {stats.activeInterns}
+          </h2>
+        </div>
+
+        <div className="cursor-pointer bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition border-l-8 border-purple-500">
+          <p className="text-gray-500 text-sm">Mentors</p>
+          <h2 className="text-4xl font-bold text-gray-900 mt-2">
+            {stats.mentors}
+          </h2>
+        </div>
+
+        <div className="cursor-pointer bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition border-l-8 border-yellow-500">
+          <p className="text-gray-500 text-sm">Programs</p>
+          <h2 className="text-4xl font-bold text-gray-900 mt-2">
+            {stats.programs}
+          </h2>
+        </div>
+
+        <div className="cursor-pointer bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition border-l-8 border-indigo-500">
+          <p className="text-gray-500 text-sm">Active Programs</p>
+          <h2 className="text-4xl font-bold text-gray-900 mt-2">
+            {stats.activePrograms}
+          </h2>
+        </div>
+
+        <div className="cursor-pointer bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition border-l-8 border-red-500">
+          <p className="text-gray-500 text-sm">Completed Programs</p>
+          <h2 className="text-4xl font-bold text-gray-900 mt-2">
+            {stats.completedPrograms}
+          </h2>
+        </div>
       </div>
     </div>
   );
