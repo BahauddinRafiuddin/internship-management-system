@@ -18,8 +18,7 @@ const Register = () => {
 
   const [errors, setErrors] = useState({});
 
-  const emailRegex =
-    /^[a-zA-Z][a-zA-Z0-9._%+-]{2,}@[a-z0-9.-]+\.[a-z]{2,}$/;
+  const emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]{2,}@[a-z0-9.-]+\.[a-z]{2,}$/;
 
   const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
   const fullNameRegex = /^[A-Za-z ]{3,30}$/;
@@ -36,8 +35,8 @@ const Register = () => {
       err.name = "Full name is required";
     }
 
-    if(!fullNameRegex.test(form.name)){
-      err.name=`"${form.name}" can't contain special character`
+    if (!fullNameRegex.test(form.name)) {
+      err.name = `"${form.name}" can't contain special character`;
     }
 
     if (!emailRegex.test(form.email)) {
@@ -95,6 +94,8 @@ const Register = () => {
           <input
             name="name"
             placeholder="Enter your full name"
+            minlength="3"
+            maxlength="30"
             onChange={handleChange}
             className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm
             focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
@@ -115,6 +116,7 @@ const Register = () => {
           <input
             name="email"
             placeholder="Enter your email address"
+            maxLength={50}
             onChange={handleChange}
             className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm
             focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
@@ -134,6 +136,7 @@ const Register = () => {
             type={show ? "text" : "password"}
             name="password"
             placeholder="Create a strong password"
+            minlength="8"
             onChange={handleChange}
             className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm
             focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
@@ -147,7 +150,9 @@ const Register = () => {
         </div>
 
         {errors.password && (
-          <p className="text-red-500 font-bold text-xs mt-1">{errors.password}</p>
+          <p className="text-red-500 font-bold text-xs mt-1">
+            {errors.password}
+          </p>
         )}
 
         {/* CONFIRM PASSWORD */}
@@ -160,6 +165,7 @@ const Register = () => {
           <input
             type={showConfirm ? "text" : "password"}
             name="confirmPassword"
+            minLength={8}
             placeholder="Re-enter your password"
             onChange={handleChange}
             className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm
@@ -174,7 +180,9 @@ const Register = () => {
         </div>
 
         {errors.confirmPassword && (
-          <p className="text-red-500 font-bold text-xs mt-1">{errors.confirmPassword}</p>
+          <p className="text-red-500 font-bold text-xs mt-1">
+            {errors.confirmPassword}
+          </p>
         )}
 
         <button

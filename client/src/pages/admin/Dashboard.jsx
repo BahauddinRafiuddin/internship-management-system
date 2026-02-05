@@ -33,7 +33,7 @@ const AdminDashboard = () => {
           activeInterns: interns.filter((i) => i.isActive).length,
           mentors: mentors.length,
           programs: programs.length,
-          activePrograms: programs.filter((p) => p.stats === "active").length,
+          activePrograms: programs.filter((p) => p.status === "active").length,
           completedPrograms: programs.filter((p) => p.status === "completed")
             .length,
         });

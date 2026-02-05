@@ -87,6 +87,7 @@ const Login = () => {
           <input
             name="email"
             placeholder="Enter your email address"
+            maxLength={50}
             value={form.email}
             onChange={handleChange}
             className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm
@@ -109,6 +110,7 @@ const Login = () => {
             name="password"
             placeholder="Enter your password"
             value={form.password}
+            minLength={8}
             onChange={handleChange}
             className="w-full pl-10 pr-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm
             focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
