@@ -95,7 +95,7 @@ const Register = () => {
             name="name"
             placeholder="Enter your full name"
             minlength="3"
-            maxlength="30"
+            maxlength="45"
             onChange={handleChange}
             className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm
             focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
@@ -137,6 +137,8 @@ const Register = () => {
             name="password"
             placeholder="Create a strong password"
             minlength="8"
+            maxLength={8}
+
             onChange={handleChange}
             className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm
             focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
@@ -166,6 +168,7 @@ const Register = () => {
             type={showConfirm ? "text" : "password"}
             name="confirmPassword"
             minLength={8}
+            maxLength={8}
             placeholder="Re-enter your password"
             onChange={handleChange}
             className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm
