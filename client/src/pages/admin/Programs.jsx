@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getAllPrograms, changeProgramStatus } from "../../api/program.api";
 import { SearchX } from "lucide-react";
 
@@ -13,24 +13,25 @@ import ConfirmModal from "../../components/common/ConfirmModal";
 const Programs = () => {
   const [confirmData, setConfirmData] = useState(null);
   const [programs, setPrograms] = useState([]);
-  const [allPrograms, setAllPrograms] = useState([]);
+  // const [allPrograms, setAllPrograms] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [editProgram, setEditProgram] = useState(null);
 
   // ================= FETCH =================
+  // ================= FETCH =================
   const fetchPrograms = async () => {
     try {
       const res = await getAllPrograms();
       setPrograms(res.programs);
-      setAllPrograms(res.programs);
     } catch (err) {
       toastError(err.response?.data?.message);
     }
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPrograms();
   }, []);
 
@@ -41,6 +42,10 @@ const Programs = () => {
     if (program.status === "upcoming") nextStatus = "active";
     else if (program.status === "active") nextStatus = "completed";
 
+    if (nextStatus === "completed" && program.totalTasks < 10) {
+      toastError("Program must have at least 10 tasks before completing.");
+      return;
+    }
     try {
       await changeProgramStatus(program._id, nextStatus);
       toastSuccess(`Program marked as ${nextStatus}`);
@@ -51,25 +56,21 @@ const Programs = () => {
   };
 
   // ================= SEARCH =================
-  useEffect(() => {
-    if (!search.trim()) {
-      setPrograms(allPrograms);
-      return;
-    }
+  const filteredPrograms = useMemo(() => {
+    if (!search.trim()) return programs;
 
     const value = search.trim().toLowerCase();
 
-    const filtered = allPrograms.filter(
+    return programs.filter(
       (p) =>
         p.title.toLowerCase().includes(value) ||
         p.domain.toLowerCase().includes(value) ||
         p.mentor?.name?.toLowerCase().includes(value) ||
         p.status.toLowerCase().includes(value),
     );
+  }, [search, programs]);
 
-    setPrograms(filtered);
-  }, [search, allPrograms]);
-
+  // console.log("programs", programs);
   return (
     <div className="space-y-8">
       {/* ================= MODALS ================= */}
@@ -146,7 +147,7 @@ const Programs = () => {
       </div>
 
       {/* ================= EMPTY ================= */}
-      {programs.length === 0 ? (
+      {filteredPrograms.length === 0 ? (
         <div className="bg-white rounded-2xl shadow p-14 flex flex-col items-center text-center space-y-4">
           <SearchX className="w-20 h-20 text-blue-500 opacity-70" />
 
@@ -169,7 +170,7 @@ const Programs = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {programs.map((program) => (
+          {filteredPrograms.map((program) => (
             <div
               key={program._id}
               className="
@@ -207,6 +208,9 @@ const Programs = () => {
 
                   {program.status !== "completed" && (
                     <button
+                      disabled={
+                        program.status === "active" && program.totalTasks < 10
+                      }
                       onClick={() =>
                         setConfirmData({
                           program,
@@ -219,7 +223,9 @@ const Programs = () => {
                       className={`px-4 py-2 rounded-lg text-white cursor-pointer ${
                         program.status === "upcoming"
                           ? "bg-blue-600 hover:bg-blue-700"
-                          : "bg-green-600 hover:bg-green-700"
+                          : program.totalTasks < 10
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-green-600 hover:bg-green-700"
                       }`}
                     >
                       {program.status === "upcoming" ? "Activate" : "Complete"}

@@ -1,6 +1,6 @@
 import api from "./axios"
 
-export const getAllPrograms = async (params) => {
+export const getAllPrograms = async () => {
   const res = await api.get('/admin/programs')
   return res.data
 }

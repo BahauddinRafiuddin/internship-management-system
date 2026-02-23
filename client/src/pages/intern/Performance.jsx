@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { getMyPerformance, getMyProgram } from "../../api/intern.api";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import {
   ClipboardList,
   CheckCircle,
@@ -48,7 +50,6 @@ const Performance = () => {
     load();
   }, []);
 
-
   if (loading)
     return (
       <div className="text-center py-20 text-gray-500">
@@ -64,7 +65,35 @@ const Performance = () => {
     );
 
   const completion = Number(performance.completionPercentage);
+  const data = [
+    {
+      name: "Approved",
+      value: performance.approvedTasks,
+    },
+    {
+      name: "Rejected",
+      value: performance.rejectedTasks,
+    },
+    {
+      name: "Pending",
+      value: performance.pendingTasks,
+    },
+  ];
 
+  const COLORS = ["#22c55e", "#ef4444", "#f59e0b"];
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white shadow-lg rounded-lg px-4 py-2 border">
+          <p className="font-semibold text-gray-700">{payload[0].name}</p>
+          <p className="text-sm text-gray-500">Tasks: {payload[0].value}</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
   return (
     <div className="space-y-8">
       {/* ================= HEADER ================= */}
@@ -109,7 +138,7 @@ const Performance = () => {
       {/* ================= PERFORMANCE SUMMARY ================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* COMPLETION */}
-        <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+        {/* <div className="bg-white rounded-2xl shadow p-6 space-y-4">
           <div className="flex items-center gap-2 font-semibold">
             <BarChart3 size={20} />
             Completion
@@ -127,8 +156,38 @@ const Performance = () => {
           </div>
 
           <p className="text-sm text-gray-500">Based on approved tasks</p>
-        </div>
+        </div> */}
+        <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+          <div className="flex items-center gap-2 font-semibold">
+            <BarChart3 size={20} />
+            Completion
+          </div>
+          <div className="relative h-48 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                  ))}
+                  <Tooltip content={<CustomTooltip />} />
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
 
+            {/* Centered Percentage */}
+            <div className="absolute text-3xl font-bold text-indigo-600">
+              {completion}%
+            </div>
+          </div>
+        </div>
         {/* GRADE */}
         {pStatus === "completed" && (
           <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-center items-center space-y-3">

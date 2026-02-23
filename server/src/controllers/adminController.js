@@ -11,9 +11,9 @@ export const createMentor = async (req, res) => {
       return res.status(400).json({ success: false, message: 'All Fields Are Required!!' })
     }
 
-    const user=await User.findOne({email:email})
-    if(user){
-      return res.status(400).json({success:false,message:"User Already Exist With This Email"})
+    const user = await User.findOne({ email: email })
+    if (user) {
+      return res.status(400).json({ success: false, message: "User Already Exist With This Email" })
     }
     const mentor = await User.create({
       name,
@@ -286,22 +286,94 @@ export const createProgram = async (req, res) => {
 }
 
 // Get All Programs
+// export const getAllPrograms = async (req, res) => {
+//   try {
+//     const programs = await InternshipProgram.find().populate("mentor", "email name")
+//     if (programs.length === 0) {
+//       return res.status(404).json({ success: false, message: "Programs Not Found!" })
+//     }
+
+//     return res.status(200).json({ success: true, message: "Programs Found Successfully", programs })
+//   } catch (error) {
+//     console.log(error)
+//     res.status(500).json({
+//       success: false,
+//       message: 'Server Error While Fetching InternShip Program '
+//     })
+//   }
+// }
+
 export const getAllPrograms = async (req, res) => {
   try {
-    const programs = await InternshipProgram.find().populate("mentor", "email name")
-    if (programs.length === 0) {
-      return res.status(404).json({ success: false, message: "Programs Not Found!" })
+    const programs = await InternshipProgram.aggregate([
+
+      // 🔹 Join Mentor
+      {
+        $lookup: {
+          from: "users", // mentor collection
+          localField: "mentor",
+          foreignField: "_id",
+          as: "mentor"
+        }
+      },
+
+      // Convert mentor array to object
+      {
+        $unwind: {
+          path: "$mentor",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+
+      // 🔹 Join Tasks
+      {
+        $lookup: {
+          from: "tasks",
+          localField: "_id",
+          foreignField: "program",
+          as: "tasks"
+        }
+      },
+
+      // 🔹 Add totalTasks field
+      {
+        $addFields: {
+          totalTasks: { $size: "$tasks" }
+        }
+      },
+
+      // 🔹 Clean response
+      {
+        $project: {
+          tasks: 0, // remove full task array
+          "mentor.password": 0, // hide sensitive fields
+          "mentor.__v": 0
+        }
+      }
+
+    ]);
+
+    if (!programs.length) {
+      return res.status(404).json({
+        success: false,
+        message: "Programs Not Found!"
+      });
     }
 
-    return res.status(200).json({ success: true, message: "Programs Found Successfully", programs })
+    return res.status(200).json({
+      success: true,
+      message: "Programs Found Successfully",
+      programs
+    });
+
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
+    console.error(error);
+    return res.status(500).json({
       success: false,
-      message: 'Server Error While Fetching InternShip Program '
-    })
+      message: "Server Error While Fetching Internship Program"
+    });
   }
-}
+};
 
 // Change Program Status
 export const changeProgramStatus = async (req, res) => {
